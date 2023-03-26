@@ -1,0 +1,17 @@
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\Durak.csproj.AssemblyReference.cache
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\Durak.Form1.resources
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\Durak.csproj.GenerateResource.cache
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\Durak.GeneratedMSBuildEditorConfig.editorconfig
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\Durak.AssemblyInfoInputs.cache
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\Durak.AssemblyInfo.cs
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\Durak.csproj.CoreCompileInputs.cache
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Debug\net6.0-windows\Durak.exe
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Debug\net6.0-windows\Durak.deps.json
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Debug\net6.0-windows\Durak.runtimeconfig.json
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Debug\net6.0-windows\Durak.dll
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Debug\net6.0-windows\Durak.pdb
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\Durak.dll
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\refint\Durak.dll
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\Durak.pdb
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\Durak.genruntimeconfig.cache
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\obj\Debug\net6.0-windows\ref\Durak.dll

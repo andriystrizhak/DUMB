@@ -1,0 +1,12 @@
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\Durak.exe
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\NUnit3.TestAdapter.dll
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\NUnit3.TestAdapter.pdb
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\nunit.engine.dll
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\nunit.engine.api.dll
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\nunit.engine.core.dll
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\testcentric.engine.metadata.dll
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\Durak.dll
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\Durak.deps.json
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\Durak.runtimeconfig.json
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\Durak.pdb
+D:\IT\DEVELOPMENT\PRACTICE\Katas\Durak\bin\Release\net6.0-windows8.0\publish\nunit.framework.dll
