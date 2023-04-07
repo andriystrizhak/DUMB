@@ -8,7 +8,8 @@ namespace Durak
 {
     public static class Deck
     {
-        public static List<Card> Cards = AddAllCards();
+        public static List<Card> Cards { get; set; }
+        static Deck() => Cards = AddAllCards();
 
         /// <summary>
         /// Заповнює колоду всіма 36-ма картами
@@ -26,20 +27,20 @@ namespace Durak
 
     public class Player
     {
-        public List<Card> Cards = new List<Card>();
+        public List<Card> Cards { get; set; } = new List<Card>();
     }
 
     public static class Table
     {
-        public static List<(Card, Card)> CardsPairs = new List<(Card, Card)>();
-        public static List<Card> TakenCards = new List<Card>();
+        public static List<(Card, Card)> CardsPairs { get; set; } = new List<(Card, Card)>();
+        public static List<Card> TakenCards { get; set; } = new List<Card>();
 
-        public static Card AttackingCard; //= new Card();
-        public static Card DefendingCard; //= new Card();
+        public static Card AttackingCard { get; set; }
+        public static Card DefendingCard { get; set; }
     }
 
     public static class DiscardPile
     {
-        public static List<Card> Cards = new List<Card>();
+        public static List<Card> Cards { get; set; } = new List<Card>();
     }
 }

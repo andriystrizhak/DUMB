@@ -10,9 +10,12 @@ namespace Durak.Gameplay
 {
     public static class Gameplay
     {
+        //{
         public static Player[] Players;
         public static int Attacker;
         public static int Attacked;
+        //} - separate to static class
+
 
         //TODO - Реалізувати закінчення гри й висвітлення переможця (якщо кількість карт одного з гравців + відбій == 36).
         // - А краще висвітлювати вихід гравця з гри в якого 0 карт при тому що в колоді також 0.
@@ -20,10 +23,12 @@ namespace Durak.Gameplay
 
         public static void Main()
         {
+            //{
             int playersNumber = 2;
             Players = new Player[playersNumber];
             for (int i = 0; i < Players.Length; i++)
                 Players[i] = new Player();
+            //} - separate
 
             ToSayHello();
 

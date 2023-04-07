@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Durak
 {
+    /// <summary>
+    /// Реалізує сутність "Гральна Карта"
+    /// </summary>
     public class Card
     {
         public readonly KeyValuePair<Suits, Ranks> Current;
