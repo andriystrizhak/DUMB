@@ -17,6 +17,12 @@ namespace Durak
             => Current = currentCard;
 
         public int CompareTo(Card? attackingCard)
+            => ((attackingCard.Current.Key != Trump.Suit
+                && Current.Key == Trump.Suit)
+                || (Current.Key == attackingCard.Current.Key
+                && Current.Value > attackingCard.Current.Value))
+                ? 1 : -1;
+        /*
         {
             if ((attackingCard.Current.Key != Trump.Suit
                 && Current.Key == Trump.Suit) 
@@ -25,6 +31,7 @@ namespace Durak
                 return 1;
             else return -1;
         }
+        */
 
         public bool Equals(Card? currentCard)
             => Current.Value == currentCard.Current.Value;

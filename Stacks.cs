@@ -15,7 +15,7 @@ namespace Durak
         /// Заповнює колоду всіма 36-ма картами
         /// </summary>
         /// <returns></returns>
-        static List<Card> AddAllCards()
+        private static List<Card> AddAllCards()
         {
             var allCards = new List<Card>();
             for (int i = 0; i < 4; i++)

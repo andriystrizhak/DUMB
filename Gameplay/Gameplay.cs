@@ -10,25 +10,30 @@ namespace Durak.Gameplay
 {
     public static class Gameplay
     {
-        //{
+        //TODO - rid it (after replacing) {
         public static Player[] Players;
         public static int Attacker;
         public static int Attacked;
-        //} - separate to static class
-
+        //}
 
         //TODO - Реалізувати закінчення гри й висвітлення переможця (якщо кількість карт одного з гравців + відбій == 36).
         // - А краще висвітлювати вихід гравця з гри в якого 0 карт при тому що в колоді також 0.
         // - А також врахувати випадок НІЧИЇ.
 
+        //TODO - Реалізувати логіку того, що у відбиваючого закінчилися карти або був перевищений ліміт в 6 карт (сповіщення, що    
+        //TODO - З'явився БАГ - комп'ютор в якись момент починає безкінечно підкидувати певну карту
+
+        //TODO - Реалізувати логіку "Пограти ще раз"
+
+
         public static void Main()
         {
-            //{
+            //TODO - rid it {
             int playersNumber = 2;
             Players = new Player[playersNumber];
             for (int i = 0; i < Players.Length; i++)
                 Players[i] = new Player();
-            //} - separate
+            //}
 
             ToSayHello();
 
@@ -59,11 +64,7 @@ namespace Durak.Gameplay
                             + "\n\n\n\n\n");
                     }
             }
-            Console.Write("                What's your final words, man?\n                              ");
-            Console.ReadLine();
-            Console.WriteLine("                 You better not say anything."
-                + "\n                     Okay, see you later!");
-            Console.ReadKey(true);
+            ToSayBye();
         }
 
         /// <summary>
@@ -96,6 +97,18 @@ namespace Durak.Gameplay
                 ? "\n                =( The first move is yours )="
                 : $"\n                 ===( Player {Attacker + 1} goes first )==="
                 + $"\n                (Lowest trump is: {attackerTrumpCard.Item1.Current})");
+        }
+
+        /// <summary>
+        /// Виводить прощальну текстову інтеракцію в консоль
+        /// </summary>
+        static void ToSayBye()
+        {
+            Console.Write("                What's your final words, man?\n                              ");
+            Console.ReadLine();
+            Console.WriteLine("                 You better not say anything."
+                + "\n                     Okay, see you later!");
+            Console.ReadKey(true);
         }
 
         //************************************************************************************************
@@ -163,7 +176,7 @@ namespace Durak.Gameplay
         /// <summary>
         /// Виводить на екран всі МОЇ поточні карти
         /// </summary>
-        static void ShowMyCards()
+        public static void ShowMyCards()
         {
             Console.WriteLine("\n                       ** your cards **");
             foreach (var card in Players[0].Cards)
@@ -173,7 +186,7 @@ namespace Durak.Gameplay
         /// <summary>
         /// Виводить на екран всі поточні карти на столі
         /// </summary>
-        static void ShowTable()
+        public static void ShowTable()
         {
             Console.WriteLine("\n                         ** table **");
 
