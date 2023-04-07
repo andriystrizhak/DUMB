@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
-namespace Durak
+namespace Durak.Gameplay
 {
     public static class Gameplay
     {
@@ -33,7 +33,7 @@ namespace Durak
                 if (Attacker == 0) SimulateMyAttack();
                 else SimulateComputerAttack();
 
-                Attacker = (++Attacker) % Players.Length;
+                Attacker = ++Attacker % Players.Length;
                 Attacked = (Attacker + 1) % Players.Length;
                 DistributeCards();
                 Console.WriteLine("\n\n*****************************************************************");
@@ -43,14 +43,14 @@ namespace Durak
                     {
                         isTheEnd = true;
                         Console.WriteLine("\n\n\n\n\n"
-                            + (i == 0 
-                            ? ("                       ~~~~~~~~~~~~~~~~\n"
+                            + (i == 0
+                            ? "                       ~~~~~~~~~~~~~~~~\n"
                             + "                    <=@| You are DUMB |@=>\n"
-                            + "                       ~~~~~~~~~~~~~~~~")
-                            : ("                     ~~~~~~~~~~~~~~~~~~~~\n"
+                            + "                       ~~~~~~~~~~~~~~~~"
+                            : "                     ~~~~~~~~~~~~~~~~~~~~\n"
                             + $"                  <=@| Player {i + 1} is DUMB |@=>\n"
                             + "                     ~~~~~~~~~~~~~~~~~~~~"
-                            + "\n\n                        ==( YOU WIN )=="))
+                            + "\n\n                        ==( YOU WIN )==")
                             + "\n\n\n\n\n");
                     }
             }
@@ -70,8 +70,8 @@ namespace Durak
                 + "\n                 Do you want to know the rules?"
                 + "\n                       ( \"y\" or \"n\" )\n                              ");
             string answer = Console.ReadLine();
-            Console.WriteLine((answer == "y")
-                ? "                   Dude, just google it! -_-" : (answer == "n")
+            Console.WriteLine(answer == "y"
+                ? "                   Dude, just google it! -_-" : answer == "n"
                 ? "                 Think you're the smartest? o_O"
                 : "             Um, OK, just don`t cry if you lose o_o");
             Console.Write("             -So, press any button to start game!-\n                              ");
@@ -87,10 +87,10 @@ namespace Durak
             Attacker = attackerTrumpCard.Item2;
             Attacked = (Attacker + 1) % Players.Length;
 
-            Console.WriteLine((Attacker == 0
+            Console.WriteLine(Attacker == 0
                 ? "\n                =( The first move is yours )="
-                : ($"\n                 ===( Player {(Attacker + 1)} goes first )===")
-                + $"\n                (Lowest trump is: {attackerTrumpCard.Item1.Current})"));
+                : $"\n                 ===( Player {Attacker + 1} goes first )==="
+                + $"\n                (Lowest trump is: {attackerTrumpCard.Item1.Current})");
         }
 
         //************************************************************************************************
@@ -196,15 +196,15 @@ namespace Durak
         {
             //TODO - щоб перше коло максимум 5 карт атака [ввести КАУНТЕР КІЛ (??)]
             Console.WriteLine("\n                 =======( Your turn )=======");
-            int possibleAttacksNumber = (Players[Attacker].Cards.Count > 6)
-                ? 6 : (Players[Attacker].Cards.Count > Players[Attacked].Cards.Count)
+            int possibleAttacksNumber = Players[Attacker].Cards.Count > 6
+                ? 6 : Players[Attacker].Cards.Count > Players[Attacked].Cards.Count
                 ? Players[Attacked].Cards.Count : Players[Attacker].Cards.Count;
 
             for (int i = 0; i < possibleAttacksNumber; i++)
             {
                 ShowMyCards();
                 Console.Write((i == 0 ? "\n                -Choose your attacking card!-"
-                    : "\n\n                -Choose the next attacking card!-") 
+                    : "\n\n                -Choose the next attacking card!-")
                     + "\n                      (or \"0\" to pass)\n                              ");
 
                 int myAttackingCardIndex = ChooseMyCard(CardPurpose.Attack);
@@ -248,12 +248,12 @@ namespace Durak
                 myAnswer = Console.ReadLine();
 
                 while (!int.TryParse(myAnswer, out selectedCardIndex)
-                    || (selectedCardIndex > Players[0].Cards.Count || selectedCardIndex < 0))
+                    || selectedCardIndex > Players[0].Cards.Count || selectedCardIndex < 0)
                 {
                     Console.Write("                    -write correct number-\n                              ");
                     myAnswer = Console.ReadLine();
                 }
-                if (--selectedCardIndex == -1) 
+                if (--selectedCardIndex == -1)
                     return selectedCardIndex;
 
                 if (purpose != CardPurpose.Defence)
@@ -272,7 +272,7 @@ namespace Durak
             }
             return selectedCardIndex;
         }
-        
+
         /// <summary>
         /// Симулює випадок коли комп'ютор відбиває атаку
         /// </summary>
@@ -319,7 +319,7 @@ namespace Durak
                 if (attackCardIndex == -1) break;
             }
             int takenCardsNumber = ReplaceAllTakenCardsToPlayer();
-            Console.WriteLine($"\n               =( Player {(Attacked + 1)} takes {takenCardsNumber} card(-s) )=" 
+            Console.WriteLine($"\n               =( Player {Attacked + 1} takes {takenCardsNumber} card(-s) )="
                 + "\n                      (and miss a turn)");
             Attacker++;
         }
@@ -338,7 +338,7 @@ namespace Durak
             {
                 if (Table.AttackingCard.Current.Key != Trump.Suit
                     && player.Cards[i].Current.Key == Trump.Suit)
-                    allHigherCards.Add(player.Cards[i]); 
+                    allHigherCards.Add(player.Cards[i]);
 
                 if (player.Cards[i].Current.Key == Table.AttackingCard.Current.Key
                     && player.Cards[i].Current.Value > Table.AttackingCard.Current.Value)
@@ -395,10 +395,10 @@ namespace Durak
             }
 
             bool isSameTypeCard = false;
-            foreach (var card in tableCards) 
+            foreach (var card in tableCards)
                 if (card.Current.Value == Table.AttackingCard.Current.Value)
                     isSameTypeCard = true;
-                
+
             return isSameTypeCard;
         }
 
@@ -422,10 +422,10 @@ namespace Durak
         /// <returns>Значення типу bool що вказує чи підходить ця карта, чи ні</returns>
         static bool IsThisSuitableForDefence()
         {
-            return (Table.AttackingCard.Current.Key != Trump.Suit
-                    && Table.DefendingCard.Current.Key == Trump.Suit)
-                    || (Table.DefendingCard.Current.Key == Table.AttackingCard.Current.Key
-                    && Table.DefendingCard.Current.Value > Table.AttackingCard.Current.Value);
+            return Table.AttackingCard.Current.Key != Trump.Suit
+                    && Table.DefendingCard.Current.Key == Trump.Suit
+                    || Table.DefendingCard.Current.Key == Table.AttackingCard.Current.Key
+                    && Table.DefendingCard.Current.Value > Table.AttackingCard.Current.Value;
         }
 
         //************************************************************************************************
@@ -481,8 +481,8 @@ namespace Durak
         static void SimulateComputerAttack()
         {
             Console.WriteLine($"\n\n                =====( Player's {Attacker + 1} turn )=====");
-            int possibleAttacksNumber = (Players[Attacker].Cards.Count > 6)
-                ? 6 : (Players[Attacker].Cards.Count > Players[Attacked].Cards.Count)
+            int possibleAttacksNumber = Players[Attacker].Cards.Count > 6
+                ? 6 : Players[Attacker].Cards.Count > Players[Attacked].Cards.Count
                 ? Players[Attacked].Cards.Count : Players[Attacker].Cards.Count;
 
             for (int i = 0; i < possibleAttacksNumber; i++)
@@ -544,14 +544,14 @@ namespace Durak
         {
             Card currentCard = cards[0];
             bool isTrumpCardThere = false;
-            
+
             for (int i = 0; i < cards.Count; i++)
                 if (cards[i].Current.Key != Trump.Suit)
                     isTrumpCardThere = true;
-            
+
             for (int i = 1; i < cards.Count; i++)
                 if (currentCard.Current.Value > cards[i].Current.Value
-                    && (isTrumpCardThere ? (cards[i].Current.Key != Trump.Suit) : true))
+                    && (isTrumpCardThere ? cards[i].Current.Key != Trump.Suit : true))
                     currentCard = cards[i];
 
             return currentCard;
@@ -571,7 +571,7 @@ namespace Durak
             Card smallestSutableCard = FindSmallestCard(suitableForAttackingCard);
 
             Random rnd = new Random();
-            bool doAttackWithTrumpCard = (rnd.Next(3) == 2) ? true : false;
+            bool doAttackWithTrumpCard = rnd.Next(3) == 2 ? true : false;
 
             if (smallestSutableCard.Current.Key == Trump.Suit
                 && !doAttackWithTrumpCard)
@@ -651,7 +651,7 @@ namespace Durak
 
             ShowTable();
             takenCardsNumber = Table.TakenCards.Count - takenCardsNumber;
-            if (takenCardsNumber !=0)
+            if (takenCardsNumber != 0)
                 Console.WriteLine($"\n               =( Player {Attacker + 1} gives you {takenCardsNumber} more cards )=");
             Console.WriteLine($"\n                  =( You take {Table.TakenCards.Count} card(-s) )="
                 + "\n                      (and miss a turn)");

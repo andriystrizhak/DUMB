@@ -8,16 +8,12 @@ namespace Durak
 {
     public static class Trump
     {
-        public static Suits Suit = GenerateRandomTrump();
+        public static readonly Suits Suit;
 
-        /// <summary>
-        /// Генерує випадковим чином козирну масть
-        /// </summary>
-        /// <returns>Конкретну рандомну масть</returns>
-        static Suits GenerateRandomTrump()
+        static Trump()
         {
             Random rnd = new Random();
-            return (Suits)rnd.Next(0, 4);
+            Suit = (Suits)rnd.Next(0, 4);
         }
     }
 }
