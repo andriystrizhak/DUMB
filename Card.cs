@@ -8,6 +8,8 @@ namespace Durak
 {
     public class Card
     {
-        public KeyValuePair<Suits, Ranks> Current = new KeyValuePair<Suits, Ranks>();
+        public readonly KeyValuePair<Suits, Ranks> Current;
+        public Card(KeyValuePair<Suits, Ranks> currentCard)
+            => Current = currentCard;
     }
 }

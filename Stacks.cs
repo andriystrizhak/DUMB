@@ -19,10 +19,7 @@ namespace Durak
             var allCards = new List<Card>();
             for (int i = 0; i < 4; i++)
                 for (int j = 6; j < 15; j++)
-                    allCards.Add(new Card 
-                    { 
-                        Current = new KeyValuePair<Suits, Ranks>((Suits)i, (Ranks)j) 
-                    });
+                    allCards.Add(new Card (new KeyValuePair<Suits, Ranks>((Suits)i, (Ranks)j)));
             return allCards;
         }
     }
@@ -37,8 +34,8 @@ namespace Durak
         public static List<(Card, Card)> CardsPairs = new List<(Card, Card)>();
         public static List<Card> TakenCards = new List<Card>();
 
-        public static Card AttackingCard = new Card();
-        public static Card DefendingCard = new Card();
+        public static Card AttackingCard; //= new Card();
+        public static Card DefendingCard; //= new Card();
     }
 
     public static class DiscardPile
