@@ -6,6 +6,23 @@ using System.Threading.Tasks;
 
 namespace Durak
 {
+    public interface Player
+    {
+        public List<Card> Cards { get; set; }
+    }
+
+    public class Me : Player
+    {
+        public List<Card> Cards { get; set; } = new List<Card>();
+    }
+
+    public class Computer : Player
+    {
+        public List<Card> Cards { get; set; } = new List<Card>();
+    }
+
+    //********************************************************************************************
+
     public static class Deck
     {
         public static List<Card> Cards { get; set; }
@@ -23,11 +40,6 @@ namespace Durak
                     allCards.Add(new Card (new KeyValuePair<Suits, Ranks>((Suits)i, (Ranks)j)));
             return allCards;
         }
-    }
-
-    public class Player
-    {
-        public List<Card> Cards { get; set; } = new List<Card>();
     }
 
     public static class Table
