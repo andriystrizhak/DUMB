@@ -11,27 +11,24 @@ namespace Durak.Gameplay
     /// </summary>
     public class ComputerActions
     {
+        //******************************( АТАКА / ОБОРОНА / ПІДКИДУВАННЯ )*******************************
+
+        //******************************************( АТАКА )********************************************
+
         /// <summary>
         /// Симулює атаку КОМП'ЮТОРА
         /// </summary>
-        public static void SimulateComputerAttack()
+        public static void ComputerAttack()
         {
             //TODO - щоб перше коло максимум 5 карт атака
             // - перевіряючи відбій
 
             Console.WriteLine($"\n                 =====( Player's {GameState.Attacker + 1} turn )=====");
-            //Визначення максимально можливої кількості атак за хід
-            int possibleAttacksNumber = 
-                GameState.Players[GameState.Attacker].Cards.Count > 6
-                ? 6 : GameState.Players[GameState.Attacker].Cards.Count 
-                > GameState.Players[GameState.Attacked].Cards.Count
-                ? GameState.Players[GameState.Attacked].Cards.Count 
-                : GameState.Players[GameState.Attacker].Cards.Count;
+            int possibleAttacksNumber = Gameplay.PossibleAttacksNumber();
 
             //Цикл атак
             for (int i = 0; i < possibleAttacksNumber; i++)
             {
-                /*
                 //Вибір атакуючої карти (першої чи наступної)
                 if (i == 0) ChooseComputerFirstAttackingCard();
                 else
@@ -45,50 +42,13 @@ namespace Durak.Gameplay
                 }
 
                 //Відповідь "АТАКОВАНОГО" на атаку цього КОМП'ЮТОРА
-                if (ComputerAttackResponse(possibleAttacksNumber - 1, i))
+                if (AttackResponse(possibleAttacksNumber - i, i))
                     break;
-                */
-                //Симуляція атаки КОМП'ЮТОРА
-                if (ComputerAttack(possibleAttacksNumber - i, i))
-                    break;
-                /*
-                int myDefendingCardIndex = 0;
-                if (GameState.Players[GameState.Attacked] is Me)
-                {
-                    //TODO - не обов'язково я, можливо й інший робот
-                    Gameplay.ShowMyCards();
-                    Console.Write((i == 0 ? "\n                 -Choose your defending card!-"
-                        : "\n\n                -Choose the next defending card!-")
-                        + "\n                  (or \"0\" to abandone defence)\n                              ");
-
-                    myDefendingCardIndex = MyActions.ChooseMyCard(CardPurpose.Defence);
-                }
-                if (myDefendingCardIndex == -1)
-                {
-                    //TODO - не обов'язково я, можливо й інший робот
-                    SimulateDefenceAbandoningByMe(possibleAttacksNumber - i - 1); 
-                    break;
-                }
-
-                Table.CardsPairs.Add((Table.AttackingCard, GameState.Players[GameState.Attacked].Cards[myDefendingCardIndex])); //TODO - in particular method
-                for (int j = 0; j < GameState.Players[GameState.Attacker].Cards.Count; j++)
-                    if (GameState.Players[GameState.Attacker].Cards[j] == Table.AttackingCard)
-                    {
-                        GameState.Players[GameState.Attacker].Cards.RemoveAt(j);
-                        break;
-                    }
-                GameState.Players[GameState.Attacked].Cards.RemoveAt(myDefendingCardIndex);
-                Gameplay.ShowTable();
-                */
             }
-            Gameplay.ReplaceAllToDiscardPile();
+            //REMOVE - Gameplay.ReplaceAllToDiscardPile();
         }
 
-
-        //******************************( АТАКА / ОБОРОНА / ПІДКИДУВАННЯ )*******************************
-
-        //.........................................( АТАКА ).............................................
-
+        /*
         /// <summary>
         /// Симулює атаку КОМП'ЮТОРА
         /// </summary>
@@ -114,8 +74,9 @@ namespace Durak.Gameplay
                 return true;
             return false;
         }
+        */
 
-        //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+        //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
         /// <summary>
         /// Симулює вибір першої атакуючої карти
@@ -126,29 +87,6 @@ namespace Durak.Gameplay
 
             Console.WriteLine("\n                         ** attack **");
             Console.WriteLine($"                        {Table.AttackingCard.Current} =>\n");
-        }
-
-        /// <summary>
-        /// Знаходить найменшу карту в списку карт
-        /// </summary>
-        /// <returns>Найменшу карту зі списку</returns>
-        static Card FindSmallestCard(List<Card> cards)
-        {
-            Card currentCard = cards[0];
-            bool isTrumpCardThere = false;
-
-            //Перевірка списку карт на наявність козирних
-            for (int i = 0; i < cards.Count; i++)
-                if (cards[i].Current.Key != GameState.TrumpSuit)
-                    isTrumpCardThere = true;
-
-            //Пошук найменшої карти
-            for (int i = 1; i < cards.Count; i++)
-                if (currentCard.Current.Value > cards[i].Current.Value
-                    && (isTrumpCardThere ? cards[i].Current.Key != GameState.TrumpSuit : true))
-                    currentCard = cards[i];
-
-            return currentCard;
         }
 
         /// <summary>
@@ -177,17 +115,42 @@ namespace Durak.Gameplay
             return false;
         }
 
+        //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+        /// <summary>
+        /// Знаходить найменшу карту в списку карт
+        /// </summary>
+        /// <returns>Найменшу карту зі списку</returns>
+        static Card FindSmallestCard(List<Card> cards)
+        {
+            Card currentCard = cards[0];
+            bool isTrumpCardThere = false;
+
+            //Перевірка списку карт на наявність козирних
+            for (int i = 0; i < cards.Count; i++)
+                if (cards[i].Current.Key != GameState.TrumpSuit)
+                    isTrumpCardThere = true;
+
+            //Пошук найменшої карти
+            for (int i = 1; i < cards.Count; i++)
+                if (currentCard.Current.Value > cards[i].Current.Value
+                    && (isTrumpCardThere ? cards[i].Current.Key != GameState.TrumpSuit : true))
+                    currentCard = cards[i];
+
+            return currentCard;
+        }
+
         /// <summary>
         /// Знаходить всі підходящі для атаки карти
         /// </summary>
         /// <returns>Список підходящих для атаки карт</returns>
-        static List<Card> FindSuitableForAttackingCards() //REMOVE - CardPurpose purpose = CardPurpose.Defence)
+        static List<Card> FindSuitableForAttackingCards()
         {
             List<Card> suitableCards = new List<Card>();
 
             //Шукаємо всі карти, що підходять для атаки
             foreach (var card in GameState.Players[GameState.Attacker].Cards)
-                if (IsThisSuitableForComputerAttack(card)) //REMOVE - , purpose))
+                if (IsThisSuitableForComputerAttack(card))
                     suitableCards.Add(card);
 
             return suitableCards;
@@ -198,21 +161,19 @@ namespace Durak.Gameplay
         /// </summary>
         /// <param name="currentCard">Поточна карта, яка перевірятиметься</param>
         /// <returns>Значення типу bool що вказує чи підходить ця карта, чи ні</returns>
-        static bool IsThisSuitableForComputerAttack(Card currentCard) //REMOVE - , CardPurpose purpose)
+        static bool IsThisSuitableForComputerAttack(Card currentCard)
         {
             //Список, що міститиме карти зі "столу" та "карт на зняття"
             List<Card> tableCards = new List<Card>();
-            //REMOVE - if (purpose == CardPurpose.Defence)
             foreach (var cardPair in Table.CardsPairs)
             {
                 tableCards.Add(cardPair.Item1);
                 tableCards.Add(cardPair.Item2);
             }
-            //REMOVE - else
             tableCards.AddRange(Table.TakenCards);
 
             //Перевірка чи є карта такого ж типу(рангу) в списку
-            bool isSameTypeCard = false;
+            bool isSameTypeCard = false; //TODO - вивести в окремий метод
             foreach (var card in tableCards)
                 if (card.Current.Value == currentCard.Current.Value)
                     isSameTypeCard = true;
@@ -221,24 +182,20 @@ namespace Durak.Gameplay
         }
 
 
-        //TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO
-        //TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO
-        //TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO
-
-        //........................................( ОБОРОНА )............................................
+        //******************************************( ОБОРОНА )******************************************
 
         /// <summary>
-        /// Викликає набір дій для симуляції реакції комп'ютора або МОЮ на атаку комп'ютора
+        /// Визначає чию симуляцію реакції на атаку потрібно запустити: ГРАВЦЯ чи КОМП'ЮТОРА
         /// </summary>
-        /// <param name="remainingAttacksNumber">Початкова кількість можливих атак</param>
+        /// <param name="remainingAttacksNumber">Кількість можливих атак, що залишилась</param>
         /// <param name="i">Кількість вже здійснених атак</param>
         /// <returns>Значення типу bool що вказує чи переривати цикл атак комп'ютора, чи ні</returns>
-        static bool ComputerAttackResponse(int remainingAttacksNumber, int i)
+        static bool AttackResponse(int remainingAttacksNumber, int i)
         {
             if (GameState.Players[GameState.Attacked] is Me)
                 return MyActions.MyAttackResponse(remainingAttacksNumber, i);
             else
-                return ComputerResponseToAttack(remainingAttacksNumber);
+                return ComputerAttackResponse(remainingAttacksNumber);
         }
 
         /// <summary>
@@ -246,51 +203,111 @@ namespace Durak.Gameplay
         /// </summary>
         /// <param name="remainingAttacksNumber">Кількість можливих атак, що залишилась</param>
         /// <returns>Значення типу bool що вказує чи переривати цикл атак ГРАВЦЯ, чи ні</returns>
-        public static bool ComputerResponseToAttack(int remainingAttacksNumber)
+        public static bool ComputerAttackResponse(int remainingAttacksNumber)
         {
-            /*
-            Gameplay.ShowMyCards();
-            Console.Write((i == 0 ? "\n                -Choose your attacking card!-"
-                : "\n\n                -Choose the next attacking card!-")
-                + "\n                      (or \"0\" to pass)\n                              ");
-
-            int myAttackingCardIndex = MyActions.ChooseMyCard(CardPurpose.Attack);
-            if (myAttackingCardIndex == -1) return true;
-            */
             var higherCards = FindHigherCards();
+
+            //Атака або буде відбита, або доведеться знімати карти
             if (higherCards.Count > 0)
-                SimulateDefendingAttackWithComputer(higherCards);
+                DefendingAttackWithComputer(higherCards);
             else
             {
-                SimulateDefenceAbandoningByComputer(remainingAttacksNumber);
+                DefenceAbandoningByComputer(remainingAttacksNumber);
                 return true;
             }
             return false;
         }
 
+        /// <summary>
+        /// Симулює відбивання атаки КОМП'ЮТОРОМ
+        /// </summary>
+        /// <param name="higherCards">Список більших від атакуючої карт</param>
+        public static void DefendingAttackWithComputer(List<Card> higherCards)
+        {
+            Console.WriteLine($"\n\n               ==( Player {GameState.Attacked + 1} defend the attack )==");
+
+            FindDefendingCard(higherCards);
+            MyActions.CardsRemoving();
+        }
+
+        //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+        /// <summary>
+        /// Знаходить всі карти більші від "атакуючої"
+        /// </summary>
+        /// <returns>Список зі всіма більшими картами</returns>
+        public static List<Card> FindHigherCards()
+        {
+            var player = GameState.Players[GameState.Attacked];
+            var allHigherCards = new List<Card>();
+
+            //Пошук всіх більших від "атакуючої" карт
+            for (int i = 0; i < player.Cards.Count; i++)
+                if (Table.AttackingCard < player.Cards[i])
+                    allHigherCards.Add(player.Cards[i]);
+            /* REMOVE -
+                if (Table.AttackingCard.Current.Key != GameState.TrumpSuit
+                    && player.Cards[i].Current.Key == GameState.TrumpSuit)
+                    allHigherCards.Add(player.Cards[i]);
+                
+                if (player.Cards[i].Current.Key == Table.AttackingCard.Current.Key
+                    && player.Cards[i].Current.Value > Table.AttackingCard.Current.Value)
+                    allHigherCards.Add(player.Cards[i]);
+            */
+            return allHigherCards;
+        }
+
+        //OPTIMIZE
+        /// <summary>
+        /// Присвоює найменшу карту зі списку до Table.DefendingCard
+        /// </summary>
+        /// <param name="cards">Список більших від атакуючої карт</param>
+        static void FindDefendingCard(List<Card> cards)
+        {
+            Card currentCard = cards[0];
+            int minCardIndex = -1;
+            for (int i = 0; i < cards.Count; i++)
+                if (cards[i].Current.Key == Table.AttackingCard.Current.Key)
+                {
+                    minCardIndex = i;
+                    break;
+                }
+            if (minCardIndex == -1)
+            {
+                for (int i = 1; i < cards.Count; i++)
+                    if (currentCard.Current.Value > cards[i].Current.Value)
+                        currentCard = cards[i];
+            }
+            else
+            {
+                currentCard = cards[minCardIndex];
+                for (int i = minCardIndex + 1; i < cards.Count; i++)
+                    if (currentCard.Current.Key == cards[i].Current.Key
+                        && currentCard.Current.Value > cards[i].Current.Value)
+                        currentCard = cards[i];
+            }
+            Table.DefendingCard = currentCard;
+        }
 
 
-
-
+        //***************************************( ПІДКИДУВАННЯ )****************************************
 
         //TODO - куди переміститити???
         /// <summary>
-        /// Симулює накидування МЕНІ карт на знімання
+        /// Симулює підкидування карт "на знімання" КОМП'ЮТОРОМ
         /// </summary>
-        /// <param name="movesLeft">Скільки карт ще може докинути РОБОТ</param>
-        public static void SimulateDefenceAbandoningByMe(int movesLeft)
+        /// <param name="movesLeft">Скільки карт ще може докинути КОМП'ЮТОР</param>
+        public static void DefenceAbandoningByMe(int movesLeft)
         {
+            //Переміщення всіх карт в карти "до знімання"
             Gameplay.ReplaceAllToTakenCards();
-            int takenCardsNumber = Table.TakenCards.Count + 1;
-
-            Console.WriteLine($"\n\n                 =( You abandone the defence )=");
             Table.TakenCards.Add(Table.AttackingCard);
+            int takenCardsNumber = Table.TakenCards.Count;
+            Console.WriteLine($"\n\n                 =( You abandone the defence )=");
 
             //TODO - все має працювати як все
-            var sutableCards = FindSuitableForAttackingCards();//CardPurpose.Giving);
-            for (int i = 1; i < (movesLeft > sutableCards.Count ? sutableCards.Count : movesLeft); i++)
-                Table.TakenCards.Add(sutableCards[i]);
-
+            MoveAddedCardsToTakenCards(movesLeft);
+            /*
             for (int j = 0; j < GameState.Players[GameState.Attacker].Cards.Count; j++)
                 for (int k = 0; k < Table.TakenCards.Count; k++)
                     if (GameState.Players[GameState.Attacker].Cards[j].Current.Key == Table.TakenCards[k].Current.Key
@@ -298,51 +315,54 @@ namespace Durak.Gameplay
                         GameState.Players[GameState.Attacker].Cards.RemoveAt(j);
 
             Gameplay.ShowTable();
+            */
             takenCardsNumber = Table.TakenCards.Count - takenCardsNumber;
             if (takenCardsNumber != 0)
                 Console.WriteLine($"\n               =( Player {GameState.Attacker + 1} gives you {takenCardsNumber} more cards )=");
             Console.WriteLine($"\n                  =( You take {Table.TakenCards.Count} card(-s) )="
                 + "\n                      (and miss a turn)");
 
-            Gameplay.ReplaceAllTakenCardsToPlayer();
+            //Gameplay.ReplaceAllTakenCardsToPlayer();
             GameState.ResetAttackingPlayer();
         }
 
-        //************************************************************************************************
-
-
         /// <summary>
-        /// Симулює відбивання атаки КОМП'ЮТОРОМ
+        /// Переміщує всі карти від "атакуючого" (того хто підкидує) до карт "до знімання"
         /// </summary>
-        /// <param name="higherCards">Список більших від атакуючої карт</param>
-        public static void SimulateDefendingAttackWithComputer(List<Card> higherCards)
+        /// <param name="movesLeft">Скільки карт ще може докинути КОМП'ЮТОР</param>
+        public static void MoveAddedCardsToTakenCards(int movesLeft)
         {
-            Console.WriteLine($"\n\n               ==( Player {GameState.Attacked + 1} defend the attack )==");
+            //Додавання "атакуючих" карт до карт "до знімання"
+            for (int i = 1; i < movesLeft; i++)
+            {
+                if (ChooseComputerAttackingCard()) break;
+                Table.TakenCards.Add(Table.AttackingCard);
+            }
 
-            //var smallestHigherCard = FindSmallestHigherCard(higherCards);
-            FindSmallestHigherCard(higherCards);
-            MyActions.CardsRemoving();
-            /*
-            Table.CardsPairs.Add((Table.AttackingCard, Table.DefendingCard));
-
-            for (int i = 0; i < GameState.Players[GameState.Attacked].Cards.Count; i++)
-                if (GameState.Players[GameState.Attacked].Cards[i] == Table.DefendingCard)
-                {
-                    GameState.Players[GameState.Attacked].Cards.RemoveAt(i);
-                    break;
-                }
-            GameState.Players[GameState.Attacker].Cards.RemoveAt(attackCardIndex);
+            //Видалення всіх цих карт в "атакуючого" (того хто підкидував)
+            for (int j = 0; j < GameState.Players[GameState.Attacker].Cards.Count; j++)
+                for (int k = 0; k < Table.TakenCards.Count; k++)
+                    if (GameState.Players[GameState.Attacker].Cards[j] == Table.TakenCards[k])
+                        GameState.Players[GameState.Attacker].Cards.RemoveAt(j); 
+                        //TODO - а після видалення кількість карт в лісті не зміниться?
 
             Gameplay.ShowTable();
-            */
         }
+
+
+        //*****************************************( ЗНІМАННЯ )******************************************
+
+        //TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO
+        //TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO
+        //TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO
+
 
         //TODO - переробити в метод підходящий для: і МЕНЕ і для комп'ютора
         /// <summary>
         /// Симулює випадок коли комп'ютор знімає карту(-и)
         /// </summary>
         /// <param name="movesLeft">Скільки карт Я можу додати</param>
-        public static void SimulateDefenceAbandoningByComputer(int movesLeft)
+        public static void DefenceAbandoningByComputer(int movesLeft)
         {
             Gameplay.ReplaceAllToTakenCards();
             for (int i = 0; i < movesLeft; i++)
@@ -357,100 +377,13 @@ namespace Durak.Gameplay
                 if (GameState.Players[GameState.Attacker] is Me)
                     if (MyActions.GivingCardsByMe()) break;
                 else
-                    SimulateDefenceAbandoningByMe(movesLeft);
+                    DefenceAbandoningByMe(movesLeft);
             }
-            int takenCardsNumber = Gameplay.ReplaceAllTakenCardsToPlayer();
+            int takenCardsNumber = Table.TakenCards.Count; //Gameplay.ReplaceAllTakenCardsToPlayer();
             Console.WriteLine($"\n               =( Player {GameState.Attacked + 1} takes {takenCardsNumber} card(-s) )="
                 + "\n                      (and miss a turn)");
             GameState.ResetAttackingPlayer();
             //GameStatus.Attacker++;
-        }
-
-        /// <summary>
-        /// Знаходить всі карти більші від атакуючої
-        /// </summary>
-        /// <returns>Ліст зі всіма більшими картами</returns>
-        public static List<Card> FindHigherCards()
-        {
-            var player = GameState.Players[GameState.Attacked];
-            var allHigherCards = new List<Card>();
-            for (int i = 0; i < player.Cards.Count; i++)
-            {
-                if (Table.AttackingCard.Current.Key != GameState.TrumpSuit
-                    && player.Cards[i].Current.Key == GameState.TrumpSuit)
-                    allHigherCards.Add(player.Cards[i]);
-
-                if (player.Cards[i].Current.Key == Table.AttackingCard.Current.Key
-                    && player.Cards[i].Current.Value > Table.AttackingCard.Current.Value)
-                    allHigherCards.Add(player.Cards[i]);
-            }
-            return allHigherCards;
-        }
-
-        /*
-        /// <summary>
-        /// Знаходить найменшу карту з Ліста більших від атакуючої карт
-        /// </summary>
-        /// <param name="cards">Ліст більших карт</param>
-        /// <returns>Найменшу карту</returns>
-        static Card FindSmallestHigherCard(List<Card> cards)
-        {
-            Card currentCard = cards[0];
-            int minCardIndex = -1;
-            for (int i = 0; i < cards.Count; i++)
-                if (cards[i].Current.Key == Table.AttackingCard.Current.Key)
-                {
-                    minCardIndex = i;
-                    break;
-                }
-            if (minCardIndex == -1)
-            {
-                for (int i = 1; i < cards.Count; i++)
-                    if (currentCard.Current.Value > cards[i].Current.Value)
-                        currentCard = cards[i];
-            }
-            else
-            {
-                currentCard = cards[minCardIndex];
-                for (int i = minCardIndex + 1; i < cards.Count; i++)
-                    if (currentCard.Current.Key == cards[i].Current.Key
-                        && currentCard.Current.Value > cards[i].Current.Value)
-                        currentCard = cards[i];
-            }
-            return currentCard;
-        }
-        */
-
-        /// <summary>
-        /// Знаходить найменшу карту зі списку більших від атакуючої карт
-        /// </summary>
-        /// <param name="cards">Список більших від атакуючої карт</param>
-        static void FindSmallestHigherCard(List<Card> cards)
-        {
-            Card currentCard = cards[0];
-            int minCardIndex = -1;
-            for (int i = 0; i < cards.Count; i++)
-                if (cards[i].Current.Key == Table.AttackingCard.Current.Key)
-                {
-                    minCardIndex = i;
-                    break;
-                }
-            if (minCardIndex == -1)
-            {
-                for (int i = 1; i < cards.Count; i++)
-                    if (currentCard.Current.Value > cards[i].Current.Value)
-                        currentCard = cards[i];
-            }
-            else
-            {
-                currentCard = cards[minCardIndex];
-                for (int i = minCardIndex + 1; i < cards.Count; i++)
-                    if (currentCard.Current.Key == cards[i].Current.Key
-                        && currentCard.Current.Value > cards[i].Current.Value)
-                        currentCard = cards[i];
-            }
-            //return currentCard;
-            Table.DefendingCard = currentCard;
         }
     }
 }

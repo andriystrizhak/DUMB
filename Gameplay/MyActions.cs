@@ -11,65 +11,44 @@ namespace Durak.Gameplay
     /// </summary>
     public class MyActions
     {
+        //******************************( АТАКА / ОБОРОНА / ПІДКИДУВАННЯ )*******************************
+
         /// <summary>
         /// Симулює атаку ГРАВЦЯ
         /// </summary>
-        public static void SimulateMyAttack()
+        public static void MyAttack()
         {
             //TODO - щоб перше коло максимум 5 карт атака
             // - перевіряючи відбій
             //TODO - не дозволяти "пропускати хід" не кинувши першу карту
 
             Console.WriteLine("\n                 =======( Your turn )=======");
-            //Визначення максимально можливої кількості атак за хід
-            int possibleAttacksNumber = 
-                GameState.Players[GameState.Attacker].Cards.Count > 6
-                ? 6 : GameState.Players[GameState.Attacker].Cards.Count 
-                > GameState.Players[GameState.Attacked].Cards.Count
-                ? GameState.Players[GameState.Attacked].Cards.Count 
-                : GameState.Players[GameState.Attacker].Cards.Count;
+            int possibleAttacksNumber = Gameplay.PossibleAttacksNumber();
 
             //Цикл атак
             for (int i = 0; i < possibleAttacksNumber; i++)
             {
-                /*
-                //Вибір МНОЮ атакуючої карти
                 Gameplay.ShowMyCards();
                 Console.Write((i == 0 ? "\n                -Choose your attacking card!-"
                     : "\n\n                -Choose the next attacking card!-")
                     + "\n                      (or \"0\" to pass)\n                              ");
-                int myAttackingCardIndex = ChooseMyCard(CardPurpose.Attack);
-                if (myAttackingCardIndex == -1) break;
 
-                //Симуляція реакції комп'ютора на атаку
-                */
-                //Симуляція атаки ГРАВЦЯ
-                if (MyAttack(possibleAttacksNumber - i, i))
-                    break;
-                /*
-var higherCards = ComputerActions.FindHigherCards();
-if (higherCards.Count > 0)
-    ComputerActions.SimulateDefendingAttackWithComputer(higherCards);
-else
-{
-    ComputerActions.SimulateDefenceAbandoningByComputer(myAttackingCardIndex, possibleAttacksNumber - i);
-    break;
-}
-*/
+                //Вибір ГРАВЦЕМ атакуючої карти
+                if (ChooseMyCard(CardPurpose.Attack)) break;
+                //Виклик реакції КОМП'ЮТОРА на атаку
+                if (ComputerActions.ComputerAttackResponse(possibleAttacksNumber - i)) break;
             }
-            Gameplay.ReplaceAllToDiscardPile();
+            //REMOVE - Gameplay.ReplaceAllToDiscardPile();
         }
 
-
-        //******************************( АТАКА / ОБОРОНА / ПІДКИДУВАННЯ )*******************************
-
+        /*
         /// <summary>
         /// Cимулює атаку ГРАВЦЯ
         /// </summary>
         /// <param name="remainingAttacksNumber">Кількість можливих атак, що залишилась</param>
         /// <param name="i">Кількість вже здійснених атак</param>
         /// <returns>Значення типу bool що вказує чи переривати цикл атак ГРАВЦЯ, чи ні</returns>
-        public static bool MyAttack(int remainingAttacksNumber, int i)
+        static bool MyAttack(int remainingAttacksNumber, int i)
         {
             Gameplay.ShowMyCards();
             Console.Write((i == 0 ? "\n                -Choose your attacking card!-"
@@ -77,7 +56,6 @@ else
                 + "\n                      (or \"0\" to pass)\n                              ");
 
             //Вибір ГРАВЦЕМ атакуючої карти
-            //REMOVE - int myAttackingCardIndex = ChooseMyCard(CardPurpose.Attack);
             if (ChooseMyCard(CardPurpose.Attack)) return true;
 
             //Виклик реакції КОМП'ЮТОРА на атаку
@@ -85,14 +63,15 @@ else
                 return true;
             return false;
         }
+        */
 
         /// <summary>
-        /// Cимулює реакцію ГРАВЦЯ на атаку комп'ютора
+        /// Cимулює реакцію ГРАВЦЯ на атаку
         /// </summary>
         /// <param name="remainingAttacksNumber">Кількість можливих атак, що залишилась</param>
         /// <param name="i">Кількість вже здійснених атак</param>
         /// <returns>Значення типу bool що вказує чи переривати цикл атак КОМП'ЮТОРА, чи ні</returns>
-        public static bool MyAttackResponse(int remainingAttacksNumber, int i)
+        public static bool MyAttackResponse(int movesLeft, int i)
         {
             Gameplay.ShowMyCards();
             Console.Write((i == 0 ? "\n                 -Choose your defending card!-"
@@ -100,25 +79,12 @@ else
                 + "\n                  (or \"0\" to abandone defence)\n                              ");
 
             //Вибір ГРАВЦЕМ карти для оборони
-            //REMOVE - int myDefendingCardIndex = ChooseMyCard(CardPurpose.Defence);
             if (ChooseMyCard(CardPurpose.Defence))
             {
                 //У випадку невдачі - знімання карт ГРАВЦЕМ
-                ComputerActions.SimulateDefenceAbandoningByMe(remainingAttacksNumber - 1);
+                ComputerActions.DefenceAbandoningByMe(movesLeft - 1);
                 return true;
             }
-            /*
-            Table.CardsPairs.Add((Table.AttackingCard, GameState.Players[GameState.Attacked].Cards[myDefendingCardIndex])); //TODO - in particular method
-            for (int j = 0; j < GameState.Players[GameState.Attacker].Cards.Count; j++)
-                if (GameState.Players[GameState.Attacker].Cards[j] == Table.AttackingCard)
-                {
-                    GameState.Players[GameState.Attacker].Cards.RemoveAt(j);
-                    break;
-                }
-            GameState.Players[GameState.Attacked].Cards.RemoveAt(myDefendingCardIndex);
-
-            Gameplay.ShowTable();
-            */
             CardsRemoving();
             return false;
         }
@@ -134,7 +100,6 @@ else
                 + "\n                      (or \"0\" to pass)\n                             ");
 
             //Вибір ГРАВЦЕМ карти для циклу підкидування
-            //REMOVE - int attackCardIndex = ChooseMyCard(CardPurpose.Giving);
             if (ChooseMyCard(CardPurpose.Giving)) return true;
             return false;
         }
@@ -147,7 +112,7 @@ else
         /// </summary>
         /// <param name="purpose">Призначення вибору карти</param>
         /// <returns>Значення типу bool що вказує чи перериває ГРАВЕЦЬ цикл атаки / оборони / підкидування , чи ні</returns>
-        public static bool ChooseMyCard(CardPurpose purpose)
+        static bool ChooseMyCard(CardPurpose purpose)
         {
             string myAnswer;
             int selectedCardIndex = 0;
@@ -189,7 +154,7 @@ else
         }
 
 
-        //**************************( ПЕРЕВІРКА КАРТИ НА "ПІДХОДЯЩІСТЬ" )**********************************
+        //**************************( ПЕРЕВІРКА КАРТИ НА "ПІДХОДЯЩІСТЬ" )*********************************
 
         /// <summary>
         /// Перевіряє чи дана атакуюча карта може бути використана ДЛЯ АТАКИ звіряючись з картами на "столі"
@@ -206,18 +171,7 @@ else
                 tableCards.Add(cardPair.Item1);
                 tableCards.Add(cardPair.Item2);
             }
-
-            //Перевірка чи є карта такого ж типу(рангу)
-            bool isSameTypeCard = false;
-            foreach (var card in tableCards)
-                if (card.Current.Value == Table.AttackingCard.Current.Value)
-                    isSameTypeCard = true;
-
-            //NEWFEATURE - check
-            if (!isSameTypeCard)
-                Table.AttackingCard = null;
-
-            return isSameTypeCard;
+            return IsSameTypeCard(tableCards);
         }
 
         /// <summary>
@@ -225,19 +179,7 @@ else
         /// </summary>
         /// <returns>Значення типу bool що вказує чи підходить ця карта, чи ні</returns>
         static bool IsThisSuitableForGiving()
-        {
-            //Перевірка чи є карта такого ж типу(рангу) в картах "на знімання"
-            bool isSameTypeCard = false;
-            foreach (var card in Table.TakenCards)
-                if (card.Current.Value == Table.AttackingCard.Current.Value)
-                    isSameTypeCard = true;
-
-            //NEWFEATURE - check
-            if (!isSameTypeCard)
-                Table.AttackingCard = null;
-
-            return isSameTypeCard;
-        }
+            => IsSameTypeCard(Table.TakenCards);
 
         /// <summary>
         /// Перевіряє чи дана захисна карта може бути використана ДЛЯ ОБОРОНИ звіряючись з атакуючою карторю
@@ -250,24 +192,38 @@ else
                     || Table.DefendingCard.Current.Key == Table.AttackingCard.Current.Key
                     && Table.DefendingCard.Current.Value > Table.AttackingCard.Current.Value;
 
-            //TODO - implement 
+            //Якщо ця оборонна карта не підходить, то вона стає null
             if (!isSutable)
                 Table.DefendingCard = null;
 
             return isSutable;
         }
 
-        //TODO - Створити метод IsSameTypeCard()
+        /// <summary>
+        /// Визначає чи є в списку карта такого ж типу(рангу) що й "атакуюча"
+        /// </summary>
+        /// <param name="cards">Список карт</param>
+        /// <returns>начення типу bool що вказує чи є така карта, чи ні</returns>
+        static bool IsSameTypeCard(List<Card> cards)
+        {
+            //Перевірка того чи є карта такого ж типу(рангу) в "cards"
+            bool isSameTypeCard = false;
+            foreach (var card in cards)
+                if (card == Table.AttackingCard)
+                    isSameTypeCard = true;
 
+            //Якщо немає, то атакуюча стає null
+            if (!isSameTypeCard)
+                Table.DefendingCard = null;
 
-
-
+            return isSameTypeCard;
+        }
 
 
         //+++++++++++++++++++++++++++++++++( TODO - до Gameplay )++++++++++++++++++++++++++++++++++++++++
         /// <summary>
-        /// Видаляє атакуючу і обороняючу карти з рук гравців
-        /// </summary>
+        /// Переміщує атакуючу і обороняючу карти з рук гравців до "столу"
+        /// </summary> 
         public static void CardsRemoving()
         {
             Table.CardsPairs.Add((Table.AttackingCard, Table.DefendingCard)); //TODO - in particular method
@@ -276,21 +232,19 @@ else
             {
                 if (GameState.Players[GameState.Attacker].Cards[j] == Table.AttackingCard)
                     GameState.Players[GameState.Attacker].Cards.RemoveAt(j);
-                if (GameState.Players[GameState.Attacker].Cards[j] == Table.DefendingCard)
+                else if (GameState.Players[GameState.Attacker].Cards[j] == Table.DefendingCard)
                     GameState.Players[GameState.Attacker].Cards.RemoveAt(j);
             }
-
             for (int j = 0; j < GameState.Players[GameState.Attacked].Cards.Count; j++)
             {
                 if (GameState.Players[GameState.Attacked].Cards[j] == Table.AttackingCard)
                     GameState.Players[GameState.Attacked].Cards.RemoveAt(j);
-                if (GameState.Players[GameState.Attacked].Cards[j] == Table.DefendingCard)
+                else if (GameState.Players[GameState.Attacked].Cards[j] == Table.DefendingCard)
                     GameState.Players[GameState.Attacked].Cards.RemoveAt(j);
             }
-            //GameState.Players[GameState.Attacked].Cards.RemoveAt(myDefendingCardIndex);
+            //TODO - а після видалення кількість карт в лісті не зміниться?
 
             Gameplay.ShowTable();
         }
-
     }
 }

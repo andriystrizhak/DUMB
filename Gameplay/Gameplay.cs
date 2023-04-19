@@ -30,8 +30,13 @@ namespace Durak.Gameplay
             //bool isTheEnd = false;
             while (!IsTheEndOfGame())
             {
-                if (GameState.Players[GameState.Attacker] is Me) MyActions.SimulateMyAttack();
-                else ComputerActions.SimulateComputerAttack();
+                if (GameState.Players[GameState.Attacker] is Me) MyActions.MyAttack();
+                else ComputerActions.ComputerAttack();
+
+                //TODO - якщо Table.TakenCards.Count != 0, то інші гравці докидують карти
+                //GivingCardsByNotAttacker()
+                ReplaceAllTakenCardsToPlayer();
+                ReplaceAllToDiscardPile();
 
                 GameState.ResetAttackingPlayer();
                 DistributeCards();
@@ -97,7 +102,7 @@ namespace Durak.Gameplay
             string myAnswer;
             int selectedPlayerNumbers = 0;
 
-            Console.Write("       -So, enter player numbers and we'll start the game!-"
+            Console.Write("\n       -So, enter player numbers and we'll start the game!-"
                 + "\n                      (from \"2\" to \"6\")\n                              ");
             myAnswer = Console.ReadLine();
 
@@ -193,13 +198,31 @@ namespace Durak.Gameplay
                     GameState.Players[takesCards].Cards.Add(Deck.Cards[randomCardNumber]);
                     Deck.Cards.RemoveAt(randomCardNumber);
                 }
+
+                //Сортування карт ГРАВЦЯ
+                if (GameState.Players[takesCards] is Me)
+                {
+                    GameState.Players[takesCards].Cards.Sort();
+                    GameState.Players[takesCards].Cards.Reverse();
+                }
             }
         }
 
         //************************************************************************************************
 
         /// <summary>
-        /// Виводить на екран всі МОЇ поточні карти
+        /// Визначає максимальну кількість атак які можна здійснити за хід
+        /// </summary>
+        /// <returns>Максимальну кількість атак</returns>
+        public static int PossibleAttacksNumber()
+            => GameState.Players[GameState.Attacker].Cards.Count > 6
+                ? 6 : GameState.Players[GameState.Attacker].Cards.Count
+                > GameState.Players[GameState.Attacked].Cards.Count
+                ? GameState.Players[GameState.Attacked].Cards.Count
+                : GameState.Players[GameState.Attacker].Cards.Count;
+
+        /// <summary>
+        /// Виводить на екран всі поточні карти ГРАВЦЯ
         /// </summary>
         public static void ShowMyCards()
         {
@@ -209,7 +232,7 @@ namespace Durak.Gameplay
         }
 
         /// <summary>
-        /// Виводить на екран всі поточні карти на столі
+        /// Виводить на екран всі поточні карти на "столі"
         /// </summary>
         public static void ShowTable()
         {
@@ -474,7 +497,7 @@ static void SimulateDefendingAttackWithComputer(List<Card> higherCards, int atta
         //************************************************************************************************
 
         /// <summary>
-        /// Переміщує всі карти зі столу до карт "до знімання"
+        /// Переміщує всі карти зі "столу" до карт "до знімання"
         /// </summary>
         public static void ReplaceAllToTakenCards()
         {
@@ -501,7 +524,7 @@ static void SimulateDefendingAttackWithComputer(List<Card> higherCards, int atta
         }
 
         /// <summary>
-        /// Переміщує всі карти зі столу до відбою
+        /// Переміщує всі карти зі "столу" до "відбою"
         /// </summary>
         public static void ReplaceAllToDiscardPile()
         {
