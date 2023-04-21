@@ -250,7 +250,7 @@ namespace Durak.Gameplay
             Console.WriteLine();
         }
 
-        //************************************************************************************************
+        #region REMOVED METHODS
         /* // SimulateMyAttack()
         /// <summary>
         /// Симулює реакцію комп'ютора на атаку
@@ -494,21 +494,32 @@ static void SimulateDefendingAttackWithComputer(List<Card> higherCards, int atta
                     && Table.DefendingCard.Current.Value > Table.AttackingCard.Current.Value;
         }
         */
-        //************************************************************************************************
+        #endregion
+
+
+        //****************************************( РЕПЛЕЙСЕРИ )*****************************************
 
         /// <summary>
-        /// Переміщує всі карти зі "столу" до карт "до знімання"
+        /// Переміщує карти зі "столу" й "атакуючу" до карт "до знімання"
         /// </summary>
         public static void ReplaceAllToTakenCards()
         {
-            if (Table.CardsPairs.Count == 0) return;
-
+            //Переміщуємо карти зі "столу"
             foreach (var cardPair in Table.CardsPairs)
             {
                 Table.TakenCards.Add(cardPair.Item1);
                 Table.TakenCards.Add(cardPair.Item2);
             }
             Table.CardsPairs.Clear();
+
+            //Переміщуємо "атакуючу" карту
+            Table.TakenCards.Add(Table.AttackingCard);
+            //Видалення поточної "атакуючої" карти в "атакуючого" (того хто підкидував)
+            for (int j = 0; j < GameState.Players[GameState.Attacker].Cards.Count; j++)
+                if (GameState.Players[GameState.Attacker].Cards[j] == Table.AttackingCard)
+                    GameState.Players[GameState.Attacker].Cards.RemoveAt(j);
+            Table.AttackingCard = null;
+            //TODO - COPYPAST
         }
 
         /// <summary>
@@ -518,7 +529,7 @@ static void SimulateDefendingAttackWithComputer(List<Card> higherCards, int atta
         public static int ReplaceAllTakenCardsToPlayer()
         {
             int takenCardsNumber = Table.TakenCards.Count;
-            GameState.Players[GameState.Attacked].Cards.AddRange(Table.TakenCards);
+            GameState.Players[GameState.Attacked - 1].Cards.AddRange(Table.TakenCards);
             Table.TakenCards.Clear();
             return takenCardsNumber;
         }

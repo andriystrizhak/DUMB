@@ -52,10 +52,7 @@ namespace Durak.Gameplay
             }
         }
 
-        /// <summary>
-        /// Видаляє (перетворює в null) певного гравця з List-а тих, хто грає
-        /// </summary>
-        /// <param name="playerNumber">Індекс гравця, який буде видалений</param>
+         
         public static void RemovePlayer(int playerNumber)
         {
             Players[playerNumber] = null;

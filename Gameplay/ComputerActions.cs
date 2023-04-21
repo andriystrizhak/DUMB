@@ -15,6 +15,8 @@ namespace Durak.Gameplay
 
         //******************************************( АТАКА )********************************************
 
+        int movesLeft { get; set; }
+
         /// <summary>
         /// Симулює атаку КОМП'ЮТОРА
         /// </summary>
@@ -42,42 +44,13 @@ namespace Durak.Gameplay
                 }
 
                 //Відповідь "АТАКОВАНОГО" на атаку цього КОМП'ЮТОРА
-                if (AttackResponse(possibleAttacksNumber - i, i))
-                    break;
+                if (AttackResponse(possibleAttacksNumber - i, i)) break;
             }
-            //REMOVE - Gameplay.ReplaceAllToDiscardPile();
         }
-
-        /*
-        /// <summary>
-        /// Симулює атаку КОМП'ЮТОРА
-        /// </summary>
-        /// <param name="remainingAttacksNumber">Кількість можливих атак, що залишилась</param>
-        /// <param name="i">Кількість вже здійснених атак</param>
-        /// <returns>Значення типу bool що вказує чи переривати цикл атак КОМП'ЮТОРА, чи ні</returns>
-        static bool ComputerAttack(int remainingAttacksNumber, int i)
-        {
-            //Вибір атакуючої карти (першої чи наступної)
-            if (i == 0) ChooseComputerFirstAttackingCard();
-            else
-            {
-                if (ChooseComputerAttackingCard())
-                {
-                    Table.AttackingCard = null;
-                    Console.WriteLine($"               ==( Player {GameState.Attacker + 1} completed the attack )==");
-                    return true;
-                }
-            }
-
-            //Відповідь "АТАКОВАНОГО" на атаку цього КОМП'ЮТОРА
-            if (ComputerAttackResponse(remainingAttacksNumber, i))
-                return true;
-            return false;
-        }
-        */
 
         //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
+        //Ввести змінну з кількістю ходів, потім об'єднати в один метод атаки
         /// <summary>
         /// Симулює вибір першої атакуючої карти
         /// </summary>
@@ -165,7 +138,7 @@ namespace Durak.Gameplay
         {
             //Список, що міститиме карти зі "столу" та "карт на зняття"
             List<Card> tableCards = new List<Card>();
-            foreach (var cardPair in Table.CardsPairs)
+            foreach (var cardPair in Table.CardsPairs) //TODOTODO - мейбі тут???
             {
                 tableCards.Add(cardPair.Item1);
                 tableCards.Add(cardPair.Item2);
@@ -187,23 +160,23 @@ namespace Durak.Gameplay
         /// <summary>
         /// Визначає чию симуляцію реакції на атаку потрібно запустити: ГРАВЦЯ чи КОМП'ЮТОРА
         /// </summary>
-        /// <param name="remainingAttacksNumber">Кількість можливих атак, що залишилась</param>
+        /// <param name="movesLeft">Кількість можливих атак, що залишилась</param>
         /// <param name="i">Кількість вже здійснених атак</param>
         /// <returns>Значення типу bool що вказує чи переривати цикл атак комп'ютора, чи ні</returns>
-        static bool AttackResponse(int remainingAttacksNumber, int i)
+        static bool AttackResponse(int movesLeft, int i)
         {
             if (GameState.Players[GameState.Attacked] is Me)
-                return MyActions.MyAttackResponse(remainingAttacksNumber, i);
+                return MyActions.MyAttackResponse(movesLeft, i);
             else
-                return ComputerAttackResponse(remainingAttacksNumber);
+                return ComputerAttackResponse(movesLeft);
         }
 
         /// <summary>
         /// Cимулює реакцію КОМП'ЮТОРА на атаку
         /// </summary>
-        /// <param name="remainingAttacksNumber">Кількість можливих атак, що залишилась</param>
+        /// <param name="movesLeft">Кількість можливих атак, що залишилась</param>
         /// <returns>Значення типу bool що вказує чи переривати цикл атак ГРАВЦЯ, чи ні</returns>
-        public static bool ComputerAttackResponse(int remainingAttacksNumber)
+        public static bool ComputerAttackResponse(int movesLeft)
         {
             var higherCards = FindHigherCards();
 
@@ -212,7 +185,7 @@ namespace Durak.Gameplay
                 DefendingAttackWithComputer(higherCards);
             else
             {
-                DefenceAbandoningByComputer(remainingAttacksNumber);
+                DefenceAbandoningByComputer(movesLeft);
                 return true;
             }
             return false;
@@ -297,17 +270,18 @@ namespace Durak.Gameplay
         /// Симулює підкидування карт "на знімання" КОМП'ЮТОРОМ
         /// </summary>
         /// <param name="movesLeft">Скільки карт ще може докинути КОМП'ЮТОР</param>
-        public static void DefenceAbandoningByMe(int movesLeft)
+        public static void GivingCardsByComputer(int movesLeft)
         {
             //Переміщення всіх карт в карти "до знімання"
             Gameplay.ReplaceAllToTakenCards();
-            Table.TakenCards.Add(Table.AttackingCard);
             int takenCardsNumber = Table.TakenCards.Count;
-            Console.WriteLine($"\n\n                 =( You abandone the defence )=");
+            Console.WriteLine(GameState.Players[GameState.Attacked] is Me 
+                ? $"\n\n                 =( You abandone the defence )="
+                : $"\n\n             =( Player {GameState.Attacked + 1} abandones the defence )=");
 
-            //TODO - все має працювати як все
-            MoveAddedCardsToTakenCards(movesLeft);
-            /*
+            //
+            ReplaceAddedCardsToTakenCards(movesLeft);
+            /* REMOVE - 
             for (int j = 0; j < GameState.Players[GameState.Attacker].Cards.Count; j++)
                 for (int k = 0; k < Table.TakenCards.Count; k++)
                     if (GameState.Players[GameState.Attacker].Cards[j].Current.Key == Table.TakenCards[k].Current.Key
@@ -316,74 +290,72 @@ namespace Durak.Gameplay
 
             Gameplay.ShowTable();
             */
-            takenCardsNumber = Table.TakenCards.Count - takenCardsNumber;
-            if (takenCardsNumber != 0)
-                Console.WriteLine($"\n               =( Player {GameState.Attacker + 1} gives you {takenCardsNumber} more cards )=");
-            Console.WriteLine($"\n                  =( You take {Table.TakenCards.Count} card(-s) )="
-                + "\n                      (and miss a turn)");
+            if (GameState.Players[GameState.Attacked] is Me)
+            {
+                takenCardsNumber = Table.TakenCards.Count - takenCardsNumber;
+                if (takenCardsNumber != 0)
+                    Console.WriteLine($"\n             =( Player {GameState.Attacker + 1} gives you {takenCardsNumber} more card(-s) )=");
+                Console.WriteLine($"\n                  =( You take {Table.TakenCards.Count} card(-s) )="
+                    + "\n                      (and miss a turn)");
+            }
 
-            //Gameplay.ReplaceAllTakenCardsToPlayer();
             GameState.ResetAttackingPlayer();
         }
 
+        //СЛУЖБОВЕ
         /// <summary>
-        /// Переміщує всі карти від "атакуючого" (того хто підкидує) до карт "до знімання"
+        /// Переміщує всі нові додані "атакуючим" (тим хто підкидує) карти до карт "до знімання"
         /// </summary>
         /// <param name="movesLeft">Скільки карт ще може докинути КОМП'ЮТОР</param>
-        public static void MoveAddedCardsToTakenCards(int movesLeft)
+        public static void ReplaceAddedCardsToTakenCards(int movesLeft)
         {
             //Додавання "атакуючих" карт до карт "до знімання"
             for (int i = 1; i < movesLeft; i++)
             {
                 if (ChooseComputerAttackingCard()) break;
                 Table.TakenCards.Add(Table.AttackingCard);
-            }
 
+                //Видалення поточної "атакуючої" карти в "атакуючого" (того хто підкидував)
+                for (int j = 0; j < GameState.Players[GameState.Attacker].Cards.Count; j++)
+                    if (GameState.Players[GameState.Attacker].Cards[j] == Table.AttackingCard)
+                        GameState.Players[GameState.Attacker].Cards.RemoveAt(j);
+                //TODO - COPYPAST
+            }
+            /* REMOVE - 
             //Видалення всіх цих карт в "атакуючого" (того хто підкидував)
             for (int j = 0; j < GameState.Players[GameState.Attacker].Cards.Count; j++)
                 for (int k = 0; k < Table.TakenCards.Count; k++)
                     if (GameState.Players[GameState.Attacker].Cards[j] == Table.TakenCards[k])
                         GameState.Players[GameState.Attacker].Cards.RemoveAt(j); 
                         //TODO - а після видалення кількість карт в лісті не зміниться?
-
+            */
             Gameplay.ShowTable();
         }
 
 
         //*****************************************( ЗНІМАННЯ )******************************************
 
-        //TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO
-        //TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO
-        //TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO+TODO
-
-
-        //TODO - переробити в метод підходящий для: і МЕНЕ і для комп'ютора
         /// <summary>
-        /// Симулює випадок коли комп'ютор знімає карту(-и)
+        /// Симулює випадок коли КОМП'ЮТОР знімає карту(-и)
         /// </summary>
-        /// <param name="movesLeft">Скільки карт Я можу додати</param>
+        /// <param name="movesLeft">Скільки карт можна додати КОМП'ЮТОРУ</param>
         public static void DefenceAbandoningByComputer(int movesLeft)
         {
             Gameplay.ReplaceAllToTakenCards();
-            for (int i = 0; i < movesLeft; i++)
-            {
-                Console.WriteLine($"\n\n               =( Player {GameState.Attacked + 1} abandones the defence )=");
-                Table.TakenCards.Add(Table.AttackingCard);
-                //GameState.Players[GameState.Attacker].Cards.RemoveAt(attackCardIndex);
-                MyActions.CardsRemoving();
-                Gameplay.ShowTable();
+            Console.WriteLine($"\n\n               =( Player {GameState.Attacked + 1} abandones the defence )=");
+            Gameplay.ShowTable();
 
-                //АБО-АБО
-                if (GameState.Players[GameState.Attacker] is Me)
-                    if (MyActions.GivingCardsByMe()) break;
-                else
-                    DefenceAbandoningByMe(movesLeft);
-            }
-            int takenCardsNumber = Table.TakenCards.Count; //Gameplay.ReplaceAllTakenCardsToPlayer();
+            //Карти буде підкидувати або ГРАВЕЦЬ, або інший КОМП'ЮТОР
+            if (GameState.Players[GameState.Attacker] is Me)
+                MyActions.GivingCardsByMe(movesLeft);
+            else
+                GivingCardsByComputer(movesLeft);
+
+            int takenCardsNumber = Table.TakenCards.Count;
             Console.WriteLine($"\n               =( Player {GameState.Attacked + 1} takes {takenCardsNumber} card(-s) )="
                 + "\n                      (and miss a turn)");
+
             GameState.ResetAttackingPlayer();
-            //GameStatus.Attacker++;
         }
     }
 }

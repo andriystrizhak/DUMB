@@ -11,6 +11,8 @@ namespace Durak.Gameplay
     /// </summary>
     public class MyActions
     {
+        int movesLeft { get; set; }
+
         //******************************( АТАКА / ОБОРОНА / ПІДКИДУВАННЯ )*******************************
 
         /// <summary>
@@ -29,9 +31,9 @@ namespace Durak.Gameplay
             for (int i = 0; i < possibleAttacksNumber; i++)
             {
                 Gameplay.ShowMyCards();
-                Console.Write((i == 0 ? "\n                -Choose your attacking card!-"
-                    : "\n\n                -Choose the next attacking card!-")
-                    + "\n                      (or \"0\" to pass)\n                              ");
+                Console.Write(i == 0 ? ("\n                -Choose your attacking card!-"
+                    + "\n                      (or \"0\" to pass)\n                              ")
+                    : "\n\n                -Choose the next attacking card!-");
 
                 //Вибір ГРАВЦЕМ атакуючої карти
                 if (ChooseMyCard(CardPurpose.Attack)) break;
@@ -39,31 +41,8 @@ namespace Durak.Gameplay
                 if (ComputerActions.ComputerAttackResponse(possibleAttacksNumber - i)) break;
             }
             //REMOVE - Gameplay.ReplaceAllToDiscardPile();
+            Console.WriteLine("\n\n             ==( You have completed the attack )== ");
         }
-
-        /*
-        /// <summary>
-        /// Cимулює атаку ГРАВЦЯ
-        /// </summary>
-        /// <param name="remainingAttacksNumber">Кількість можливих атак, що залишилась</param>
-        /// <param name="i">Кількість вже здійснених атак</param>
-        /// <returns>Значення типу bool що вказує чи переривати цикл атак ГРАВЦЯ, чи ні</returns>
-        static bool MyAttack(int remainingAttacksNumber, int i)
-        {
-            Gameplay.ShowMyCards();
-            Console.Write((i == 0 ? "\n                -Choose your attacking card!-"
-                : "\n\n                -Choose the next attacking card!-")
-                + "\n                      (or \"0\" to pass)\n                              ");
-
-            //Вибір ГРАВЦЕМ атакуючої карти
-            if (ChooseMyCard(CardPurpose.Attack)) return true;
-
-            //Виклик реакції КОМП'ЮТОРА на атаку
-            if (ComputerActions.ComputerResponseToAttack(remainingAttacksNumber))
-                return true;
-            return false;
-        }
-        */
 
         /// <summary>
         /// Cимулює реакцію ГРАВЦЯ на атаку
@@ -75,14 +54,14 @@ namespace Durak.Gameplay
         {
             Gameplay.ShowMyCards();
             Console.Write((i == 0 ? "\n                 -Choose your defending card!-"
-                : "\n\n                -Choose the next defending card!-")
+                : "\n\n                 -Choose the next defending card!-")
                 + "\n                  (or \"0\" to abandone defence)\n                              ");
 
             //Вибір ГРАВЦЕМ карти для оборони
             if (ChooseMyCard(CardPurpose.Defence))
             {
                 //У випадку невдачі - знімання карт ГРАВЦЕМ
-                ComputerActions.DefenceAbandoningByMe(movesLeft - 1);
+                ComputerActions.GivingCardsByComputer(movesLeft - 1);
                 return true;
             }
             CardsRemoving();
@@ -93,19 +72,21 @@ namespace Durak.Gameplay
         /// Симулює випадок, коли ГРАВЕЦЬ підкидує карти для знімання
         /// </summary>
         /// <returns>Значення типу bool що вказує чи переривати цикл підкидування ГРАВЦЕМ, чи ні</returns>
-        public static bool GivingCardsByMe()
+        public static void GivingCardsByMe(int movesLeft)
         {
-            Gameplay.ShowMyCards();
-            Console.Write("\n\n                 -Choose the next giving card!-"
-                + "\n                      (or \"0\" to pass)\n                             ");
+            for (int i = 0; i < movesLeft; i++)
+            {
+                Gameplay.ShowMyCards();
+                Console.Write("\n\n                 -Choose the next giving card!-"
+                    + "\n                      (or \"0\" to pass)\n                             ");
 
-            //Вибір ГРАВЦЕМ карти для циклу підкидування
-            if (ChooseMyCard(CardPurpose.Giving)) return true;
-            return false;
+                //Вибір ГРАВЦЕМ карти для циклу підкидування
+                if (ChooseMyCard(CardPurpose.Giving)) break;
+            }
         }
 
 
-        //*********************************( ВИБІР КАРТИ ГРАВЦЕМ )****************************************
+        //***********************************( ВИБІР КАРТИ ГРАВЦЕМ )*************************************
 
         /// <summary>
         /// Реалізує вибір карти ГРАВЦЕМ для: атаки, підкидування чи захисту
@@ -154,7 +135,7 @@ namespace Durak.Gameplay
         }
 
 
-        //**************************( ПЕРЕВІРКА КАРТИ НА "ПІДХОДЯЩІСТЬ" )*********************************
+        //****************************( ПЕРЕВІРКА КАРТИ НА "ПІДХОДЯЩІСТЬ" )******************************
 
         /// <summary>
         /// Перевіряє чи дана атакуюча карта може бути використана ДЛЯ АТАКИ звіряючись з картами на "столі"
@@ -209,7 +190,7 @@ namespace Durak.Gameplay
             //Перевірка того чи є карта такого ж типу(рангу) в "cards"
             bool isSameTypeCard = false;
             foreach (var card in cards)
-                if (card == Table.AttackingCard)
+                if (card.Current.Value == Table.AttackingCard.Current.Value)
                     isSameTypeCard = true;
 
             //Якщо немає, то атакуюча стає null
@@ -220,7 +201,8 @@ namespace Durak.Gameplay
         }
 
 
-        //+++++++++++++++++++++++++++++++++( TODO - до Gameplay )++++++++++++++++++++++++++++++++++++++++
+        //++++++++++++++++++++++++++++++++++++( TODO - до Gameplay )+++++++++++++++++++++++++++++++++++++
+        //СЛУЖБОВЕ
         /// <summary>
         /// Переміщує атакуючу і обороняючу карти з рук гравців до "столу"
         /// </summary> 
@@ -243,7 +225,6 @@ namespace Durak.Gameplay
                     GameState.Players[GameState.Attacked].Cards.RemoveAt(j);
             }
             //TODO - а після видалення кількість карт в лісті не зміниться?
-
             Gameplay.ShowTable();
         }
     }

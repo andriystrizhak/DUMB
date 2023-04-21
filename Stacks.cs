@@ -8,16 +8,19 @@ namespace Durak
 {
     public interface Player
     {
+        public string Name { get; set;}
         public List<Card> Cards { get; set; }
     }
 
     public class Me : Player
     {
+        public string Name { get; set; }//TODO add name
         public List<Card> Cards { get; set; } = new List<Card>();
     }
 
     public class Computer : Player
     {
+        public string Name { get; set; }//TODO - add name
         public List<Card> Cards { get; set; } = new List<Card>();
     }
 
